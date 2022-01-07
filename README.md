@@ -5,9 +5,9 @@
 3. Run the following commands in the terminal ==> <br>
     cd path/to/project/directory
     <br>
-    pip install -r requirements.txt
-    <br>
     cd Shopify_Backend_Project
+    <br>
+    pip install -r requirements.txt
     <br>
     python manage.py makemigrations
     <br>
