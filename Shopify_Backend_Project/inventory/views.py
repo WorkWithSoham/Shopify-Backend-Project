@@ -1,7 +1,10 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status, views, request
+from datetime import datetime
+import csv
 
 from inventory.serializers import ItemSerializer
 from inventory.models import Item
@@ -34,7 +37,7 @@ class ItemDetailAPIView(views.APIView):
 
         return Response(serializer.data)
 
-    def delete(self, request, pk=None): 
+    def delete(self, request, pk=None):
 
         try:
             item = Item.objects.get(ItemID=pk)
@@ -81,8 +84,34 @@ class ItemCreateAPIView(views.APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProduceCSV(views.APIView):
 
+    def get(self, request):
+
+        fields = [
+            'ItemID',
+            'ItemName',
+            'ItemDescription',
+            'ItemPrice',
+            'ItemQuantity'
+        ]
+
+        # Generate the csv file with datetime
+        timestamp = datetime.now().isoformat()
+
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = f"attachment; filename={timestamp}.csv"
+        writer = csv.writer(response)
+
+        # Write the header row
+        writer.writerow(fields)
+
+        # Use the fields to get the data, specifying the model name
+        for row in Item.objects.values(*fields):
+            writer.writerow([row[field] for field in fields])
+        # return
+        return response

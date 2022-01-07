@@ -17,6 +17,7 @@ const getItems = () => {
       table += "</table>";
       document.getElementById("list").innerHTML = table;
     });
+    document.getElementById('downloadBtn').hidden = false;
 };
 
 function createItem() {
@@ -122,4 +123,13 @@ const deleteItem = () => {
     .then((response) => {
       alert("Item was deleted");
     });
+};
+
+const getCSV = () => {
+  fetch("http://localhost:8000/api/items/csv/", {
+    download: true,
+    complete: (results) => {
+      console.log(results);
+    },
+  });
 };
